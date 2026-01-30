@@ -1,3 +1,70 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-banner",
+      "description": "Hero banner for FixMyMobile",
+      "imageUrl": "https://images.unsplash.com/photo-1746005718004-1f992c399428?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bW9iaWxlJTIwcGhvbmUlMjByZXBhaXJ8ZW58MHx8fHwxNzY5NzgyNjE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mobile phone repair"
+    },
+    {
+      "id": "product-case-1",
+      "description": "A sturdy phone case",
+      "imageUrl": "https://images.unsplash.com/photo-1623393884989-cb3663e431c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaG9uZSUyMGNhc2V8ZW58MHx8fHwxNzY5Njc4MDQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone case"
+    },
+    {
+      "id": "product-case-2",
+      "description": "A slim phone case",
+      "imageUrl": "https://images.unsplash.com/photo-1619510077427-fb14470ce48e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGhvbmUlMjBjYXNlfGVufDB8fHx8MTc2OTY3ODA0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone case"
+    },
+    {
+      "id": "product-case-3",
+      "description": "A clear phone case",
+      "imageUrl": "https://images.unsplash.com/photo-1623393835885-560a7c576aa2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwaG9uZSUyMGNhc2V8ZW58MHx8fHwxNzY5Njc4MDQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone case"
+    },
+    {
+      "id": "product-screen-protector-1",
+      "description": "Tempered glass screen protector",
+      "imageUrl": "https://images.unsplash.com/photo-1636589150123-6d57c10527ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzY3JlZW4lMjBwcm90ZWN0b3J8ZW58MHx8fHwxNzY5Njc4MDQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "screen protector"
+    },
+    {
+      "id": "product-screen-protector-2",
+      "description": "Matte finish screen protector",
+      "imageUrl": "https://images.unsplash.com/photo-1636589150123-6d57c10527ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzY3JlZW4lMjBwcm90ZWN0b3J8ZW58MHx8fHwxNzY5Njc4MDQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "screen protector"
+    },
+    {
+      "id": "product-charger-1",
+      "description": "Fast charging wall adapter",
+      "imageUrl": "https://images.unsplash.com/photo-1583142485083-291557266e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaG9uZSUyMGNoYXJnZXJ8ZW58MHx8fHwxNzY5NzgyNjE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone charger"
+    },
+    {
+      "id": "product-charger-2",
+      "description": "USB-C to USB-C cable",
+      "imageUrl": "https://images.unsplash.com/photo-1595756630452-736bc8ef3693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dXNiJTIwY2FibGV8ZW58MHx8fHwxNzY5NzgyNjE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "usb cable"
+    },
+    {
+      "id": "product-charger-3",
+      "description": "Wireless charging pad",
+      "imageUrl": "https://images.unsplash.com/photo-1591290619618-904f6dd935e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3aXJlbGVzcyUyMGNoYXJnZXJ8ZW58MHx8fHwxNzY5NzgyNjE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wireless charger"
+    },
+    {
+      "id": "about-us-technician",
+      "description": "Technician working on a phone",
+      "imageUrl": "https://images.unsplash.com/photo-1744302570694-3f8949445c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZWNobmljaWFuJTIwcmVwYWlyfGVufDB8fHx8MTc2OTcyMDc2MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "technician repair"
+    },
+    {
+      "id": "contact-map",
+      "description": "A map showing the location of the shop",
+      "imageUrl": "https://images.unsplash.com/photo-1603466183710-70b84997a93f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaXR5JTIwbWFwfGVufDB8fHx8MTc2OTc1ODM2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "city map"
+    }
+  ]
 }
