@@ -1,8 +1,7 @@
 'use client';
 
-import { useCollection } from '@/firebase/firestore/use-collection';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -14,12 +13,11 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useMemo } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default function AdminOrdersPage() {
   const firestore = useFirestore();
-  const ordersQuery = useMemo(() => {
+  const ordersQuery = useMemoFirebase(() => {
     return query(collection(firestore, 'orders'), orderBy('orderDate', 'desc'));
   }, [firestore]);
 

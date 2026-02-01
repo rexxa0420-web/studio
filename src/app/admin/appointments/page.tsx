@@ -1,8 +1,7 @@
 'use client';
 
-import { useCollection } from '@/firebase/firestore/use-collection';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -14,11 +13,10 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useMemo } from 'react';
 
 export default function AdminAppointmentsPage() {
   const firestore = useFirestore();
-  const appointmentsQuery = useMemo(() => {
+  const appointmentsQuery = useMemoFirebase(() => {
     return query(collection(firestore, 'appointments'), orderBy('appointmentDateTime', 'desc'));
   }, [firestore]);
   
