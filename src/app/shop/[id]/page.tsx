@@ -1,40 +1,61 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { products } from '@/lib/products';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ProductCard } from '@/components/product-card';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Minus, CheckCircle } from 'lucide-react';
+import { useDoc, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc, collection, query, where, limit } from 'firebase/firestore';
+import type { Product } from '@/lib/types';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const firestore = useFirestore();
 
-  const product = products.find((p) => p.id === params.id);
+  const productRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'products', params.id);
+  }, [firestore, params.id]);
+
+  const { data: product, isLoading: isProductLoading } = useDoc<Product>(productRef);
+
+  const relatedProductsQuery = useMemoFirebase(() => {
+    if (!firestore || !product) return null;
+    return query(
+        collection(firestore, 'products'), 
+        where('categoryId', '==', product.categoryId),
+        limit(5) // Limit to 5, one might be the product itself
+    );
+  }, [firestore, product]);
+
+  const { data: relatedProductsData, isLoading: areRelatedLoading } = useCollection<Product>(relatedProductsQuery);
+
+  const relatedProducts = useMemo(() => {
+      return relatedProductsData?.filter(p => p.id !== params.id).slice(0, 4) ?? [];
+  }, [relatedProductsData, params.id]);
+
+
+  if (isProductLoading) {
+    return <div>Loading product...</div>;
+  }
 
   if (!product) {
     notFound();
   }
 
-  const imageUrl = PlaceHolderImages.find(p => p.id === product.images[0])?.imageUrl ?? 'https://picsum.photos/seed/placeholder/600/600';
-
-  const relatedProducts = products.filter(
-    (p) => p.categoryId === product.categoryId && p.id !== product.id
-  ).slice(0, 4);
-  
   const handleAddToCart = () => {
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.images[0],
+      image: product.imageUrl,
     }, quantity);
     toast({
       title: "Added to cart",
@@ -49,7 +70,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         <div className="aspect-square w-full overflow-hidden rounded-lg shadow-lg">
            <div className="relative h-full w-full">
             <Image
-              src={imageUrl}
+              src={product.imageUrl}
               alt={product.name}
               fill
               className="object-cover"
@@ -84,7 +105,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           <h2 className="text-2xl font-bold font-headline">Related Products</h2>
           <Separator className="my-4" />
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedProducts.map((p) => (
+            {areRelatedLoading ? <p>Loading...</p> : relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

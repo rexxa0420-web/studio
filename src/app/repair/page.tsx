@@ -5,8 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Wrench, Smartphone, CheckCircle, Clock } from "lucide-react";
+import { Calendar as CalendarIcon, Wrench, Smartphone, CheckCircle } from "lucide-react";
 import { deviceBrands, deviceModels } from "@/lib/device-data";
+import { useFirestore, useUser, initiateAnonymousSignIn, useAuth } from "@/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const repairFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -60,6 +63,10 @@ const availableTimeSlots = [
 
 export default function RepairPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const firestore = useFirestore();
+  const auth = useAuth();
+  const { user, isUserLoading } = useUser();
+  const { toast } = useToast();
   
   const form = useForm<RepairFormValues>({
     resolver: zodResolver(repairFormSchema),
@@ -70,13 +77,51 @@ export default function RepairPage() {
   const modelsForBrand = selectedBrand ? deviceModels[selectedBrand] || [] : [];
 
   useEffect(() => {
+    if (!isUserLoading && !user) {
+        initiateAnonymousSignIn(auth);
+    }
+  }, [user, isUserLoading, auth]);
+
+  useEffect(() => {
     form.resetField("model");
   }, [selectedBrand, form]);
 
-  function onSubmit(data: RepairFormValues) {
-    console.log("Repair appointment submitted:", data);
-    setShowConfirmation(true);
-    form.reset({ name: '', phone: '', brand: '', model: '', problem: '', date: undefined, time: '' });
+  async function onSubmit(data: RepairFormValues) {
+    if (!firestore || !user) {
+        toast({ variant: 'destructive', title: "Error", description: "Could not submit appointment. Please try again."});
+        return;
+    };
+    
+    const appointmentDateTime = new Date(data.date);
+    const [startTime, period] = data.time.split(' ')[0].split(':');
+    let hours = parseInt(startTime, 10);
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+    appointmentDateTime.setHours(hours);
+
+    const appointmentData = {
+        userId: user.uid,
+        name: data.name,
+        phone: data.phone,
+        brand: data.brand,
+        model: data.model,
+        problem: data.problem,
+        appointmentDateTime: appointmentDateTime.toISOString(),
+        status: "pending",
+    };
+
+    try {
+        await addDoc(collection(firestore, "appointments"), appointmentData);
+        setShowConfirmation(true);
+        form.reset({ name: '', phone: '', brand: '', model: '', problem: '', date: undefined, time: '' });
+    } catch (error) {
+        console.error("Error booking appointment: ", error);
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem booking your appointment.",
+        })
+    }
   }
 
   return (
@@ -260,7 +305,7 @@ export default function RepairPage() {
                   />
                 </div>
                 
-                <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isUserLoading}>
                   <Smartphone className="mr-2 h-5 w-5" />
                   Request Appointment
                 </Button>

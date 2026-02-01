@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
@@ -18,14 +17,12 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const imageUrl = PlaceHolderImages.find(p => p.id === product.images[0])?.imageUrl ?? 'https://picsum.photos/seed/placeholder/400/400';
-
   const handleAddToCart = () => {
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.images[0],
+      image: product.imageUrl,
     });
     toast({
       title: "Added to cart",
@@ -39,7 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link href={`/shop/${product.id}`} className="block">
           <div className="aspect-square w-full overflow-hidden relative">
             <Image
-              src={imageUrl}
+              src={product.imageUrl}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"

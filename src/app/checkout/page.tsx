@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Image from "next/image";
 import { useCart } from "@/hooks/use-cart";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -17,6 +16,9 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
 import { CheckCircle, CreditCard, Truck } from "lucide-react";
+import { useFirestore, useUser } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 const checkoutFormSchema = z.object({
   name: z.string().min(2, "Name is required."),
@@ -34,6 +36,9 @@ export default function CheckoutPage() {
   const { cart, totalPrice, clearCart, itemCount } = useCart();
   const router = useRouter();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
   
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -45,15 +50,46 @@ export default function CheckoutPage() {
     }
     return null;
   }
+  
+  async function onSubmit(data: CheckoutFormValues) {
+    if (!firestore || !user) {
+        toast({ variant: 'destructive', title: "Error", description: "You must be logged in to place an order."});
+        return;
+    };
+    
+    const orderData = {
+        userId: user.uid,
+        orderDate: serverTimestamp(),
+        totalAmount: totalPrice,
+        paymentMethod: data.paymentMethod,
+        shippingAddress: {
+            name: data.name,
+            address: data.address,
+            city: data.city,
+            pincode: data.pincode,
+        },
+        items: cart.map(item => ({
+            productId: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            imageUrl: item.image,
+        })),
+        status: 'pending'
+    };
 
-  const findImage = (imageId: string) => {
-    return PlaceHolderImages.find((img) => img.id === imageId)?.imageUrl ?? 'https://picsum.photos/seed/placeholder/100/100';
-  };
-
-  function onSubmit(data: CheckoutFormValues) {
-    console.log("Order placed:", { ...data, items: cart, total: totalPrice });
-    setShowConfirmation(true);
-    clearCart();
+    try {
+        await addDoc(collection(firestore, 'orders'), orderData);
+        setShowConfirmation(true);
+        clearCart();
+    } catch (error) {
+        console.error("Error placing order: ", error);
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem placing your order.",
+        })
+    }
   }
 
   return (
@@ -119,7 +155,7 @@ export default function CheckoutPage() {
                   {cart.map(item => (
                     <div key={item.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <Image src={findImage(item.image)} alt={item.name} width={64} height={64} className="rounded-md object-cover" data-ai-hint="product image" />
+                        <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md object-cover" data-ai-hint="product image" />
                         <div>
                           <p className="font-medium">{item.name}</p>
                           <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>

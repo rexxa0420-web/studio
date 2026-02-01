@@ -14,16 +14,10 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ScrollArea } from './ui/scroll-area';
 
 export function CartSheet() {
   const { cart, itemCount, totalPrice, updateQuantity, removeFromCart } = useCart();
-
-  const findImage = (imageId: string) => {
-    const image = PlaceHolderImages.find((img) => img.id === imageId);
-    return image ? image.imageUrl : 'https://picsum.photos/seed/placeholder/100/100';
-  };
 
   return (
     <Sheet>
@@ -51,7 +45,7 @@ export function CartSheet() {
                   <div key={item.id} className="flex items-start gap-4">
                     <div className="relative h-20 w-20 overflow-hidden rounded-md">
                       <Image
-                        src={findImage(item.image)}
+                        src={item.image}
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -104,9 +98,11 @@ export function CartSheet() {
                         <span>Subtotal</span>
                         <span>₹{totalPrice.toFixed(2)}</span>
                     </div>
-                    <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                        <Link href="/checkout">Proceed to Checkout</Link>
-                    </Button>
+                    <SheetTrigger asChild>
+                      <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Link href="/checkout">Proceed to Checkout</Link>
+                      </Button>
+                    </SheetTrigger>
                 </div>
             </SheetFooter>
           </>

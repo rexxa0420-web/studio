@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from 'react';
-import { products, categories } from '@/lib/products';
+import { useState, useMemo } from 'react';
 import { ProductCard } from '@/components/product-card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
+import type { Product, Category } from '@/lib/types';
+import { categories as productCategories } from '@/lib/product-data';
 
 export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const firestore = useFirestore();
 
-  const filteredProducts = selectedCategory
-    ? products.filter((product) => product.categoryId === selectedCategory)
-    : products;
+  const productsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    const baseQuery = collection(firestore, 'products');
+    if (selectedCategory) {
+        return query(baseQuery, where('categoryId', '==', selectedCategory));
+    }
+    return baseQuery;
+  }, [firestore, selectedCategory]);
+
+  const { data: products, isLoading } = useCollection<Product>(productsQuery);
+
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -30,7 +42,7 @@ export default function ShopPage() {
         >
           All Products
         </Button>
-        {categories.map((category) => (
+        {productCategories.map((category) => (
           <Button
             key={category.id}
             variant={selectedCategory === category.id ? 'default' : 'outline'}
@@ -41,16 +53,18 @@ export default function ShopPage() {
           </Button>
         ))}
       </div>
+      
+      {isLoading && <p className="text-center">Loading products...</p>}
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {filteredProducts.map((product) => (
+        {products?.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
       
-      {filteredProducts.length === 0 && (
+      {products?.length === 0 && !isLoading && (
         <div className="mt-16 text-center text-muted-foreground">
-          <p>No products found in this category.</p>
+          <p>No products found. Please manage your inventory in the admin panel.</p>
         </div>
       )}
     </div>

@@ -1,15 +1,26 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Wrench, Package, ShieldCheck, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { products } from '@/lib/products';
 import { ProductCard } from '@/components/product-card';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where, limit } from 'firebase/firestore';
+import type { Product } from '@/lib/types';
+
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-banner');
-  const featuredProducts = products.filter(p => p.featured);
+  const firestore = useFirestore();
+  const featuredProductsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'products'), where('featured', '==', true), limit(3));
+  }, [firestore]);
+
+  const { data: featuredProducts, isLoading } = useCollection<Product>(featuredProductsQuery);
+
 
   return (
     <div className="flex flex-col">
@@ -52,10 +63,16 @@ export default function Home() {
             Check out our handpicked selection of top-quality accessories.
           </p>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredProducts.map((product) => (
+             {isLoading && <p>Loading featured products...</p>}
+            {featuredProducts?.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+           {featuredProducts?.length === 0 && !isLoading && (
+            <div className="text-center text-muted-foreground mt-8">
+                No featured products at the moment. Check back later!
+            </div>
+           )}
           <div className="mt-10 text-center">
             <Button asChild>
               <Link href="/shop">View All Products</Link>
