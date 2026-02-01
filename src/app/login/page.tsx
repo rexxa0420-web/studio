@@ -24,8 +24,9 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebas
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, doc, setDoc, query, limit } from 'firebase/firestore';
+import { useAdmin } from '@/hooks/use-admin';
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -50,9 +51,17 @@ export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isAdmin, isLoading: isAdminLoading } = useAdmin();
 
   const adminsQuery = useMemoFirebase(() => query(collection(firestore, 'roles_admin'), limit(1)), [firestore]);
   const { data: admins, isLoading: adminsLoading } = useCollection(adminsQuery);
+  
+  useEffect(() => {
+    // If the admin status is confirmed and the user is an admin, redirect.
+    if (!isAdminLoading && isAdmin) {
+      router.push('/admin');
+    }
+  }, [isAdmin, isAdminLoading, router]);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -69,7 +78,6 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: 'Login Successful' });
-      router.push('/admin');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -87,11 +95,9 @@ export default function LoginPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
 
-        // Make the user an admin
         await setDoc(doc(firestore, 'roles_admin', user.uid), { created: new Date() });
 
         toast({ title: 'Admin Account Created', description: 'You are now being logged in.' });
-        router.push('/admin');
     } catch (error: any) {
         toast({
             variant: 'destructive',
@@ -103,7 +109,7 @@ export default function LoginPage() {
     }
   };
 
-  if (adminsLoading) {
+  if (adminsLoading || isAdminLoading) {
       return (
         <div className="container flex h-screen w-screen flex-col items-center justify-center">
             <p>Loading...</p>
