@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAdmin } from '@/hooks/use-admin';
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
@@ -38,27 +39,35 @@ export default function AdminLayout({
         <SidebarContent>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/admin" tooltip="Dashboard">
-                        <LayoutDashboard />
-                        <span>Dashboard</span>
+                    <SidebarMenuButton asChild tooltip="Dashboard">
+                        <Link href="/admin">
+                            <LayoutDashboard />
+                            <span>Dashboard</span>
+                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/admin/products" tooltip="Products">
-                        <Package />
-                        <span>Products</span>
+                    <SidebarMenuButton asChild tooltip="Products">
+                        <Link href="/admin/products">
+                            <Package />
+                            <span>Products</span>
+                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/admin/orders" tooltip="Orders">
-                        <ShoppingCart />
-                        <span>Orders</span>
+                    <SidebarMenuButton asChild tooltip="Orders">
+                        <Link href="/admin/orders">
+                            <ShoppingCart />
+                            <span>Orders</span>
+                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/admin/appointments" tooltip="Appointments">
-                        <Wrench />
-                        <span>Appointments</span>
+                    <SidebarMenuButton asChild tooltip="Appointments">
+                        <Link href="/admin/appointments">
+                            <Wrench />
+                            <span>Appointments</span>
+                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
