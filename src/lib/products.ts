@@ -74,4 +74,13 @@ export const products: Product[] = [
     images: ['product-charger-3'],
     categoryId: 'chargers-cables',
   },
+  {
+    id: '9',
+    name: 'Durable Cable (25000+ Bend Lifespan)',
+    description: 'Durable material and long lasting. This USB cable is built to last with a tested bend lifespan of over 25,000 bends.',
+    price: 100,
+    images: ['product-durable-cable'],
+    categoryId: 'chargers-cables',
+    featured: false,
+  },
 ];

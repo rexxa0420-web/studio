@@ -65,6 +65,12 @@
       "description": "A map showing the location of the shop",
       "imageUrl": "https://images.unsplash.com/photo-1603466183710-70b84997a93f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaXR5JTIwbWFwfGVufDB8fHx8MTc2OTc1ODM2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "city map"
+    },
+    {
+      "id": "product-durable-cable",
+      "description": "Durable USB cable with 25000+ bend lifespan",
+      "imageUrl": "https://images.unsplash.com/photo-1657181253444-66c4745d5a86?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx1c2IlMjBjYWJsZXxlbnwwfHx8fDE3Njk5NDk3NjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "usb cable"
     }
   ]
 }
