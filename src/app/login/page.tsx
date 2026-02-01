@@ -57,7 +57,7 @@ export default function LoginPage() {
   const { data: admins, isLoading: adminsLoading } = useCollection(adminsQuery);
   
   useEffect(() => {
-    // If the admin status is confirmed and the user is an admin, redirect.
+    // If the user is already determined to be an admin, redirect them.
     if (!isAdminLoading && isAdmin) {
       router.push('/admin');
     }
@@ -76,6 +76,7 @@ export default function LoginPage() {
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
+      // Just sign in. The useEffect will handle the redirect once useAdmin() confirms the role.
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: 'Login Successful' });
     } catch (error: any) {
@@ -95,6 +96,7 @@ export default function LoginPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
 
+        // Set the admin role. The useEffect will handle the redirect.
         await setDoc(doc(firestore, 'roles_admin', user.uid), { created: new Date() });
 
         toast({ title: 'Admin Account Created', description: 'You are now being logged in.' });
@@ -109,7 +111,7 @@ export default function LoginPage() {
     }
   };
 
-  if (adminsLoading || isAdminLoading) {
+  if (adminsLoading || (isAdminLoading && !isAdmin)) {
       return (
         <div className="container flex h-screen w-screen flex-col items-center justify-center">
             <p>Loading...</p>
