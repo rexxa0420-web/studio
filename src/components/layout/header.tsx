@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, Smartphone, Wrench, Info, Mail, Phone, MessageCircle } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { CartSheet } from '@/components/cart-sheet';
 
@@ -53,6 +53,9 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
+              <SheetHeader className="sr-only">
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
               <div className="flex h-full flex-col">
                 <div className="mb-6">
                   <Logo />
