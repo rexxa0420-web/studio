@@ -26,8 +26,8 @@ export default function AboutPage() {
     },
   ];
   
-  const accessoriesImageUrl = "https://images.unsplash.com/photo-1598331666179-1b7724125207?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-  const accessoriesImageAlt = "A collection of mobile phone accessories on display.";
+  const aboutImageUrl = "https://images.unsplash.com/photo-1621505703634-118c7347100b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  const aboutImageAlt = "A technician repairing a smartphone on a workbench.";
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
@@ -41,11 +41,12 @@ export default function AboutPage() {
       <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12">
         <div className="relative aspect-video w-full overflow-hidden rounded-lg shadow-lg">
            <Image
-              src={accessoriesImageUrl}
-              alt={accessoriesImageAlt}
+              src={aboutImageUrl}
+              alt={aboutImageAlt}
               fill
+              priority
               className="object-cover"
-              data-ai-hint="mobile accessories"
+              data-ai-hint="mobile technician repair"
             />
         </div>
         <div className="space-y-4">
