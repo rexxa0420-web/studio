@@ -59,7 +59,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         </div>
         <div className="flex flex-col justify-center">
           <h1 className="text-3xl font-bold font-headline md:text-4xl">{product.name}</h1>
-          <p className="mt-4 text-3xl font-semibold text-primary">${product.price.toFixed(2)}</p>
+          <p className="mt-4 text-3xl font-semibold text-primary">₹{product.price.toFixed(2)}</p>
           <Separator className="my-6" />
           <p className="text-muted-foreground">{product.description}</p>
           <div className="mt-8 flex items-center gap-4">
