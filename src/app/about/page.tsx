@@ -40,7 +40,7 @@ export default function AboutPage() {
 
       <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12">
         <div className="relative aspect-video w-full overflow-hidden rounded-lg shadow-lg">
-          {techImage && (
+          {techImage ? (
             <Image
               src={techImage.imageUrl}
               alt={techImage.description}
@@ -48,6 +48,10 @@ export default function AboutPage() {
               className="object-cover"
               data-ai-hint={techImage.imageHint}
             />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-muted">
+                <p className="text-muted-foreground">Image not available</p>
+            </div>
           )}
         </div>
         <div className="space-y-4">
