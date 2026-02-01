@@ -48,14 +48,14 @@ export function Footer() {
           <div>
             <h3 className="font-semibold text-foreground">Contact Us</h3>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li>123 Tech Street, Silicon Valley, CA 94000</li>
-              <li>Email: <a href="mailto:support@fixmymobile.com" className="hover:text-primary">support@fixmymobile.com</a></li>
-              <li>Phone: <a href="tel:+1234567890" className="hover:text-primary">+1 (234) 567-890</a></li>
+              <li>RZ-38, Main Rajapuri Road, Taar Factory Chowk, Uttam Nagar, New Delhi - 110059</li>
+              <li>Email: <a href="mailto:Infoservices@phoneoshop.com" className="hover:text-primary">Infoservices@phoneoshop.com</a></li>
+              <li>Phone: <a href="tel:8506090627" className="hover:text-primary">+91 8506090627</a></li>
             </ul>
           </div>
         </div>
         <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} FixMyMobile. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Phone O Shop. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -6,7 +6,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={cn("flex items-center gap-2 text-xl font-bold text-primary", className)}>
       <Smartphone className="h-6 w-6" />
-      <span className="font-headline">FixMyMobile</span>
+      <span className="font-headline">Phone O Shop</span>
     </Link>
   );
 }

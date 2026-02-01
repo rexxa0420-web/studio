@@ -20,7 +20,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const storedCart = localStorage.getItem('fixmymobile_cart');
+      const storedCart = localStorage.getItem('phoneoshop_cart');
       if (storedCart) {
         setCart(JSON.parse(storedCart));
       }
@@ -32,9 +32,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (cart.length > 0) {
-      localStorage.setItem('fixmymobile_cart', JSON.stringify(cart));
+      localStorage.setItem('phoneoshop_cart', JSON.stringify(cart));
     } else {
-      localStorage.removeItem('fixmymobile_cart');
+      localStorage.removeItem('phoneoshop_cart');
     }
   }, [cart]);
 

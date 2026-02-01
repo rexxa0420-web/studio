@@ -10,7 +10,7 @@ import { CartProvider } from '@/context/cart-context';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'FixMyMobile | Accessories & Repair',
+  title: 'Phone O Shop | Accessories & Repair',
   description: 'Your one-stop shop for mobile accessories and expert repairs.',
 };
 

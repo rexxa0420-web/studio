@@ -115,7 +115,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex justify-center gap-4">
               <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white">
-                <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/918506090627" target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-5 w-5" />
                   Chat on WhatsApp
                 </a>

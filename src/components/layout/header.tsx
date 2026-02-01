@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { CartSheet } from '@/components/cart-sheet';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const navLinks = [
   { href: '/shop', label: 'Shop', icon: Smartphone },
@@ -53,8 +54,10 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <SheetHeader className="sr-only">
-                <SheetTitle>Menu</SheetTitle>
+              <SheetHeader>
+                <SheetTitle>
+                  <VisuallyHidden>Menu</VisuallyHidden>
+                </SheetTitle>
               </SheetHeader>
               <div className="flex h-full flex-col">
                 <div className="mb-6">
@@ -77,8 +80,8 @@ export function Header() {
                   ))}
                 </nav>
                 <div className="mt-auto flex flex-col gap-4 border-t pt-4">
-                    <Button variant="outline" asChild><a href="tel:+1234567890"><Phone className="mr-2 h-4 w-4"/> Call Us</a></Button>
-                    <Button className="bg-green-500 hover:bg-green-600 text-white" asChild><a href="https://wa.me/1234567890" target="_blank"><MessageCircle className="mr-2 h-4 w-4"/> WhatsApp</a></Button>
+                    <Button variant="outline" asChild><a href="tel:8506090627"><Phone className="mr-2 h-4 w-4"/> Call Us</a></Button>
+                    <Button className="bg-green-500 hover:bg-green-600 text-white" asChild><a href="https://wa.me/918506090627" target="_blank"><MessageCircle className="mr-2 h-4 w-4"/> WhatsApp</a></Button>
                 </div>
               </div>
             </SheetContent>

@@ -32,7 +32,7 @@ export default function AboutPage() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
       <div className="text-center">
-        <h1 className="text-4xl font-bold font-headline">About FixMyMobile</h1>
+        <h1 className="text-4xl font-bold font-headline">About Phone O Shop</h1>
         <p className="mt-2 text-lg text-muted-foreground">
           Your trusted partner in mobile device care and accessories.
         </p>
@@ -53,7 +53,7 @@ export default function AboutPage() {
         <div className="space-y-4">
           <h2 className="text-3xl font-bold text-primary">Our Commitment to Excellence</h2>
           <p className="text-muted-foreground">
-            Founded with a passion for technology and customer service, FixMyMobile has grown to become a leading name in mobile repair and accessories. We understand how important your device is to your daily life, which is why we're dedicated to providing reliable, fast, and affordable services.
+            Founded with a passion for technology and customer service, Phone O Shop has grown to become a leading name in mobile repair and accessories. We understand how important your device is to your daily life, which is why we're dedicated to providing reliable, fast, and affordable services.
           </p>
           <p className="text-muted-foreground">
             Our mission is simple: to deliver top-notch repairs and high-quality products while building lasting relationships with our customers. We believe in transparency, honesty, and treating every device as if it were our own.

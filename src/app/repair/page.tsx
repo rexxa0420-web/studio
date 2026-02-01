@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Wrench, Smartphone, CheckCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Wrench, Smartphone, CheckCircle, Clock } from "lucide-react";
+import { deviceBrands, deviceModels } from "@/lib/device-data";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -38,26 +39,44 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 const repairFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   phone: z.string().min(10, "Please enter a valid phone number."),
-  device: z.string().min(1, "Please select your device type."),
+  brand: z.string().min(1, "Please select your device brand."),
+  model: z.string().min(1, "Please select your device model."),
   problem: z.string().min(10, "Please describe the problem in at least 10 characters."),
   date: z.date({
     required_error: "A date for the appointment is required.",
   }),
+  time: z.string({ required_error: "A time for the appointment is required." }),
 });
 
 type RepairFormValues = z.infer<typeof repairFormSchema>;
+
+const availableTimeSlots = [
+    '09:00 AM - 11:00 AM',
+    '11:00 AM - 01:00 PM',
+    '01:00 PM - 03:00 PM',
+    '03:00 PM - 05:00 PM',
+    '05:00 PM - 07:00 PM',
+];
 
 export default function RepairPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   
   const form = useForm<RepairFormValues>({
     resolver: zodResolver(repairFormSchema),
+    defaultValues: { name: "", phone: "", brand: "", model: "", problem: "", time: "" },
   });
+
+  const selectedBrand = form.watch("brand");
+  const modelsForBrand = selectedBrand ? deviceModels[selectedBrand] || [] : [];
+
+  useEffect(() => {
+    form.resetField("model");
+  }, [selectedBrand, form]);
 
   function onSubmit(data: RepairFormValues) {
     console.log("Repair appointment submitted:", data);
     setShowConfirmation(true);
-    form.reset({ name: '', phone: '', device: undefined, problem: '' });
+    form.reset({ name: '', phone: '', brand: '', model: '', problem: '', date: undefined, time: '' });
   }
 
   return (
@@ -102,8 +121,55 @@ export default function RepairPage() {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="(123) 456-7890" {...field} />
+                          <Input placeholder="Your phone number" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="brand"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Device Brand</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select device brand" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {deviceBrands.map(brand => (
+                              <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="model"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Device Model</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={!selectedBrand || modelsForBrand.length === 0}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select device model" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {modelsForBrand.map(model => (
+                              <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -112,35 +178,10 @@ export default function RepairPage() {
 
                 <FormField
                   control={form.control}
-                  name="device"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Device Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select device model" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="iphone">iPhone</SelectItem>
-                          <SelectItem value="samsung">Samsung</SelectItem>
-                          <SelectItem value="google_pixel">Google Pixel</SelectItem>
-                          <SelectItem value="oneplus">OnePlus</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="problem"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Problem Description</FormLabel>
+                      <FormLabel>Issue with Device</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="e.g., Cracked screen, battery draining quickly..."
@@ -153,47 +194,71 @@ export default function RepairPage() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Preferred Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Preferred Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date < new Date(new Date().setHours(0, 0, 0, 0))
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="time"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preferred Time</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a time slot" />
+                            </SelectTrigger>
                           </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date(new Date().setHours(0, 0, 0, 0))
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          <SelectContent>
+                            {availableTimeSlots.map(slot => (
+                              <SelectItem key={slot} value={slot}>{slot}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
                 <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                   <Smartphone className="mr-2 h-5 w-5" />

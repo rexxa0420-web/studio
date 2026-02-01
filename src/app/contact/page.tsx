@@ -58,15 +58,15 @@ export default function ContactPage() {
               <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
                 <h3 className="font-semibold">Our Location</h3>
-                <p className="text-sm text-muted-foreground">123 Tech Street, Silicon Valley, CA 94000</p>
+                <p className="text-sm text-muted-foreground">RZ-38, Main Rajapuri Road, Taar Factory Chowk, Uttam Nagar, New Delhi - 110059</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <Mail className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
                 <h3 className="font-semibold">Email Us</h3>
-                <a href="mailto:support@fixmymobile.com" className="text-sm text-muted-foreground hover:text-primary">
-                  support@fixmymobile.com
+                <a href="mailto:Infoservices@phoneoshop.com" className="text-sm text-muted-foreground hover:text-primary">
+                  Infoservices@phoneoshop.com
                 </a>
               </div>
             </div>
@@ -74,8 +74,8 @@ export default function ContactPage() {
               <Phone className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
                 <h3 className="font-semibold">Call Us</h3>
-                <a href="tel:+1234567890" className="text-sm text-muted-foreground hover:text-primary">
-                  +1 (234) 567-890
+                <a href="tel:8506090627" className="text-sm text-muted-foreground hover:text-primary">
+                  +91 8506090627
                 </a>
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function ContactPage() {
               <MessageCircle className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
               <div>
                 <h3 className="font-semibold">WhatsApp</h3>
-                 <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary">
+                 <a href="https://wa.me/918506090627" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary">
                   Chat with us
                 </a>
               </div>
