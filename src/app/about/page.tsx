@@ -1,11 +1,8 @@
 import Image from 'next/image';
 import { Award, Wrench, ShieldCheck, Zap } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function AboutPage() {
-  const techImage = PlaceHolderImages.find(img => img.id === 'about-us-technician');
-
   const skills = [
     {
       icon: <Award className="h-8 w-8 text-primary" />,
@@ -28,6 +25,9 @@ export default function AboutPage() {
       description: 'We pride ourselves on our efficient repair process, getting your device back to you as quickly as possible.',
     },
   ];
+  
+  const techImageUrl = "https://images.unsplash.com/photo-1621505703634-118c7347100b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  const techImageAlt = "A technician repairing a smartphone on a workbench.";
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
@@ -40,19 +40,13 @@ export default function AboutPage() {
 
       <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12">
         <div className="relative aspect-video w-full overflow-hidden rounded-lg shadow-lg">
-          {techImage ? (
-            <Image
-              src={techImage.imageUrl}
-              alt={techImage.description}
+           <Image
+              src={techImageUrl}
+              alt={techImageAlt}
               fill
               className="object-cover"
-              data-ai-hint={techImage.imageHint}
+              data-ai-hint="technician workbench"
             />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-muted">
-                <p className="text-muted-foreground">Image not available</p>
-            </div>
-          )}
         </div>
         <div className="space-y-4">
           <h2 className="text-3xl font-bold text-primary">Our Commitment to Excellence</h2>
