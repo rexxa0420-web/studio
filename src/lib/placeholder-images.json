@@ -56,9 +56,9 @@
     },
     {
       "id": "about-us-technician",
-      "description": "Technician working on a phone",
-      "imageUrl": "https://images.unsplash.com/photo-1744302570694-3f8949445c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZWNobmljaWFuJTIwcmVwYWlyfGVufDB8fHx8MTc2OTcyMDc2MXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "technician repair"
+      "description": "A mobile repair shop",
+      "imageUrl": "https://images.unsplash.com/photo-1629905689133-21c625a755a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyMHx8bW9iaWxlJTIwcmVwYWlyJTIwc2hvcHxlbnwwfHx8fDE3Njk5NTI5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "repair shop"
     },
     {
       "id": "contact-map",

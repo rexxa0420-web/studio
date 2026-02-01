@@ -14,24 +14,9 @@ export function Footer() {
               Your one-stop shop for mobile accessories and expert repairs.
             </p>
             <div className="mt-6 flex gap-4">
-              <Link href="#" aria-label="Twitter">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-                  <Twitter className="h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="#" aria-label="Facebook">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-                  <Facebook className="h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="#" aria-label="Instagram">
+              <Link href="https://www.instagram.com/phoneoshop?igsh=MXZ1emllaDY2ZDR3Yw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                   <Instagram className="h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="#" aria-label="GitHub">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-                  <Github className="h-5 w-5" />
                 </Button>
               </Link>
             </div>
