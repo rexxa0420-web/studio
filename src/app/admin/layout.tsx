@@ -39,7 +39,7 @@ export default function AdminLayout({
         <SidebarContent>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Dashboard">
+                    <SidebarMenuButton asChild>
                         <Link href="/admin">
                             <LayoutDashboard />
                             <span>Dashboard</span>
@@ -47,7 +47,7 @@ export default function AdminLayout({
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Products">
+                    <SidebarMenuButton asChild>
                         <Link href="/admin/products">
                             <Package />
                             <span>Products</span>
@@ -55,7 +55,7 @@ export default function AdminLayout({
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Orders">
+                    <SidebarMenuButton asChild>
                         <Link href="/admin/orders">
                             <ShoppingCart />
                             <span>Orders</span>
@@ -63,7 +63,7 @@ export default function AdminLayout({
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Appointments">
+                    <SidebarMenuButton asChild>
                         <Link href="/admin/appointments">
                             <Wrench />
                             <span>Appointments</span>
