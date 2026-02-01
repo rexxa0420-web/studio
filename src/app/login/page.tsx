@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -61,7 +61,8 @@ export default function LoginPage() {
   
   useEffect(() => {
     // If we've finished checking and the user is an admin, redirect to the dashboard.
-    // This handles cases where an already logged-in admin navigates to /login.
+    // This handles cases where an already logged-in admin navigates to /login,
+    // or when a user successfully logs in and their admin status is confirmed.
     if (!isAdminLoading && isAdmin) {
       router.push('/admin');
     }
@@ -81,19 +82,17 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      toast({ title: 'Login Successful' });
-      // Redirect immediately after successful login.
-      // The AdminLayout will then handle its own loading and auth checks.
-      router.push('/admin');
+      toast({ title: 'Login Successful', description: 'Redirecting to dashboard...' });
+      // No immediate redirect. The useEffect will handle it reactively.
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
         description: error.message,
       });
-    } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false); // Only set to false on error to allow retry
     }
+    // On success, isSubmitting remains true, keeping the loading state until redirection.
   };
 
   const onSignupSubmit = async (data: SignupFormValues) => {
@@ -102,26 +101,25 @@ export default function LoginPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
 
-        // Set the admin role. 
         await setDoc(doc(firestore, 'roles_admin', user.uid), { created: new Date() });
 
-        toast({ title: 'Admin Account Created', description: 'You will now be redirected.' });
-        // Redirect immediately after creating the admin account and logging in.
-        router.push('/admin');
+        toast({ title: 'Admin Account Created', description: 'Redirecting to dashboard...' });
+        // No immediate redirect. The useEffect will handle it reactively.
     } catch (error: any) {
         toast({
             variant: 'destructive',
             title: 'Signup Failed',
             description: error.message,
         });
-    } finally {
-        setIsSubmitting(false);
+        setIsSubmitting(false); // Only set to false on error to allow retry
     }
+    // On success, isSubmitting remains true, keeping the loading state until redirection.
   };
 
-  // Combined loading state for the entire page.
-  const pageIsLoading = adminsLoading || isAdminLoading;
+  // Combined loading state. Show loading if checking for admins, checking current user's status, or submitting a form.
+  const pageIsLoading = adminsLoading || isAdminLoading || isSubmitting;
 
+  // This unified loading state prevents the form from flashing or getting into loops.
   if (pageIsLoading) {
       return (
         <div className="container flex h-screen w-screen flex-col items-center justify-center">
@@ -130,8 +128,7 @@ export default function LoginPage() {
       )
   }
 
-  // If the user is logged in as an admin, the useEffect will have already fired the redirect.
-  // We can return null or a loading spinner to prevent the form from flashing.
+  // If the user is confirmed as admin but the redirect hasn't fired yet, show a redirecting message.
   if (isAdmin) {
       return (
         <div className="container flex h-screen w-screen flex-col items-center justify-center">
@@ -177,7 +174,7 @@ export default function LoginPage() {
                                 </FormItem>
                             )} />
                             <Button type="submit" className="w-full" disabled={isSubmitting}>
-                                {isSubmitting ? 'Creating Account...' : 'Create Admin Account'}
+                                Create Admin Account
                             </Button>
                         </form>
                     </Form>
@@ -230,7 +227,7 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Logging in...' : 'Login'}
+                Login
               </Button>
             </form>
           </Form>
