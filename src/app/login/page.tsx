@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -51,13 +51,17 @@ export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Get user and admin status
   const { isAdmin, isLoading: isAdminLoading } = useAdmin();
 
+  // Check if any admin accounts exist at all (for the initial signup form)
   const adminsQuery = useMemoFirebase(() => query(collection(firestore, 'roles_admin'), limit(1)), [firestore]);
   const { data: admins, isLoading: adminsLoading } = useCollection(adminsQuery);
   
   useEffect(() => {
-    // If the user is already determined to be an admin, redirect them.
+    // If we've finished checking and the user is an admin, redirect to the dashboard.
+    // This handles cases where an already logged-in admin navigates to /login.
     if (!isAdminLoading && isAdmin) {
       router.push('/admin');
     }
@@ -76,9 +80,11 @@ export default function LoginPage() {
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
-      // Just sign in. The useEffect will handle the redirect once useAdmin() confirms the role.
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: 'Login Successful' });
+      // Redirect immediately after successful login.
+      // The AdminLayout will then handle its own loading and auth checks.
+      router.push('/admin');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -96,10 +102,12 @@ export default function LoginPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
 
-        // Set the admin role. The useEffect will handle the redirect.
+        // Set the admin role. 
         await setDoc(doc(firestore, 'roles_admin', user.uid), { created: new Date() });
 
-        toast({ title: 'Admin Account Created', description: 'You are now being logged in.' });
+        toast({ title: 'Admin Account Created', description: 'You will now be redirected.' });
+        // Redirect immediately after creating the admin account and logging in.
+        router.push('/admin');
     } catch (error: any) {
         toast({
             variant: 'destructive',
@@ -111,12 +119,25 @@ export default function LoginPage() {
     }
   };
 
-  if (adminsLoading || (isAdminLoading && !isAdmin)) {
+  // Combined loading state for the entire page.
+  const pageIsLoading = adminsLoading || isAdminLoading;
+
+  if (pageIsLoading) {
       return (
         <div className="container flex h-screen w-screen flex-col items-center justify-center">
             <p>Loading...</p>
         </div>
       )
+  }
+
+  // If the user is logged in as an admin, the useEffect will have already fired the redirect.
+  // We can return null or a loading spinner to prevent the form from flashing.
+  if (isAdmin) {
+      return (
+        <div className="container flex h-screen w-screen flex-col items-center justify-center">
+            <p>Redirecting...</p>
+        </div>
+      );
   }
   
   const noAdminsExist = admins?.length === 0;
