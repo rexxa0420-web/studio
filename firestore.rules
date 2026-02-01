@@ -1,0 +1,192 @@
+/**
+ * This ruleset enforces a dual-access security model for an e-commerce and repair service application.
+ *
+ * Core Philosophy:
+ * The security model separates publicly accessible data from private user data and admin-only data.
+ * It uses a combination of user ownership (for personal data) and role-based access control (for global data).
+ * An `/roles_admin` collection explicitly grants administrative privileges to users, allowing them to manage the entire system.
+ *
+ * Data Structure:
+ * - Publicly readable data like `/products` and `/categories` are stored in top-level collections.
+ * - Private user data, including their profile (`Customer`) and `repair_appointments`, is strictly segregated and nested under `/users/{userId}`.
+ * - Global operational data like `/orders` are in a top-level collection, secured by an internal `customerId` field.
+ *
+ * Key Security Decisions:
+ * - Admin-Only Management: All write operations on global collections (`products`, `categories`, `orders`) are restricted to users with an admin role.
+ * - Strict User Scoping: Users can only access data within their own `/users/{userId}` path. Listing users is explicitly disallowed to protect privacy.
+ * - Order Security: Users can create their own orders but cannot list the global `/orders` collection. They can only read an order if their UID matches the order's `customerId`. Order modification is restricted to admins.
+ * - Default Secure: Collections with ambiguous ownership or sensitive relational data (e.g., `order_items`) default to admin-only access to prevent data leakage.
+ *
+ * Denormalization for Authorization:
+ * - The existence of a document in `/roles_admin/{userId}` grants admin privileges. This avoids complex lookups on user documents and allows for a simple `isAdmin()` check.
+ * - Each document in the `/orders` collection contains a `customerId` field. This denormalized ownership data is critical for allowing a user to read their own order without performing costly and insecure cross-collection `get` requests in the rules.
+ *
+ * Structural Segregation:
+ * - User-private data (`repair_appointments`) is stored in a subcollection under `/users/{userId}`.
+ * - Public data (`products`, `categories`) is stored in separate top-level collections. This separation makes it safe and performant to allow public list queries on product data without exposing any user-specific information.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user has an admin role.
+     * Admin status is granted by the existence of a document in the roles_admin collection.
+     */
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * Checks if the authenticated user's ID matches the provided userId from the path.
+     * This is the primary function for enforcing user ownership of data.
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * Ensures an operation is targeting an existing document.
+     * CRITICAL for all update and delete operations to prevent unintended side effects.
+     */
+    function docExists() {
+      return resource != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Global Read-Only Collections (Admin-Managed)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Products are public for anyone to read, but only admins can create, update, or delete them.
+     * @path /products/{productId}
+     * @allow (get) Any user, signed in or not, can read a specific product.
+     * @deny  (create) A non-admin user attempts to create a new product.
+     * @principle Public read with role-based writes.
+     */
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && docExists();
+      allow delete: if isAdmin() && docExists();
+    }
+
+    /**
+     * @description Categories are public for anyone to read, but only admins can create, update, or delete them.
+     * @path /categories/{categoryId}
+     * @allow (list) Any client can list all available categories.
+     * @deny  (update) A non-admin user attempts to change a category name.
+     * @principle Public read with role-based writes.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && docExists();
+      allow delete: if isAdmin() && docExists();
+    }
+
+    // -------------------------------------------------------------------------
+    // Operational Collections (Admin and User Access)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Orders can be created by any signed-in user. Only the user who owns the order (via customerId) or an admin can read it.
+     *              Listing all orders is an admin-only privilege. Updates and deletes are admin-only.
+     * @path /orders/{orderId}
+     * @allow (create) A signed-in user creates a new order for themselves (request.resource.data.customerId == auth.uid).
+     * @deny  (list) A regular user attempts to list all orders in the system.
+     * @deny  (get) A user tries to read an order where the customerId does not match their own UID.
+     * @principle Enforces document ownership via a data field (`customerId`) for reads, and role-based access for listing and modification.
+     */
+    match /orders/{orderId} {
+      allow get: if (isOwner(resource.data.customerId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update: if isAdmin() && docExists();
+      allow delete: if isAdmin() && docExists();
+    }
+
+    /**
+     * @description OrderItems are considered internal data related to an order.
+     *              Due to the lack of a direct user ownership field, all access is restricted to admins to ensure security.
+     * @path /order_items/{orderItemId}
+     * @allow (get) An admin reads an order item as part of viewing an order.
+     * @deny  (create) A regular user attempts to create a standalone order item.
+     * @principle Defaults to the most secure posture (admin-only) when direct ownership is ambiguous.
+     */
+    match /order_items/{orderItemId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() && docExists();
+      allow delete: if isAdmin() && docExists();
+    }
+
+    // -------------------------------------------------------------------------
+    // User-Scoped Data
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description A user's profile document. A user can create their own profile, and can read, update, or delete it.
+     *              Admins have read access for support purposes. Listing users is forbidden.
+     * @path /users/{userId}
+     * @allow (create) A new user creates their own profile document, ensuring the document ID matches their auth UID.
+     * @deny  (list) Any user, including an admin, attempts to list all documents in the `/users` collection.
+     * @deny  (update) A user tries to update another user's profile.
+     * @principle Restricts access to a user's own data tree and enforces self-creation.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isOwner(userId) && docExists() && request.resource.data.id == resource.data.id;
+      allow delete: if isOwner(userId) && docExists();
+
+      /**
+       * @description A user's repair appointments. Only the user or an admin can manage and view these appointments.
+       * @path /users/{userId}/repair_appointments/{appointmentId}
+       * @allow (create) A user with uid 'user123' creates an appointment under `/users/user123/repair_appointments`.
+       * @deny  (get) A user with uid 'user456' tries to read an appointment under `/users/user123/...`.
+       * @principle Enforces document ownership based on the parent path and validates relational integrity.
+       */
+      match /repair_appointments/{appointmentId} {
+        allow get: if isOwner(userId) || isAdmin();
+        allow list: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && request.resource.data.customerId == userId;
+        allow update: if isOwner(userId) && docExists() && request.resource.data.customerId == resource.data.customerId;
+        allow delete: if isOwner(userId) && docExists();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Administrative Collections
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Manages admin roles. The existence of a document here grants a user admin privileges across the application.
+     *              Only existing admins can read or write to this collection.
+     * @path /roles_admin/{userId}
+     * @allow (create) An existing admin grants admin rights to another user.
+     * @deny  (list) A non-admin user attempts to see who the admins are.
+     * @deny  (create) A non-admin user attempts to make themselves an admin.
+     * @principle Secures the role management system by restricting it to already-privileged users.
+     */
+    match /roles_admin/{userId} {
+      allow get, list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() && docExists();
+      allow delete: if isAdmin() && docExists();
+    }
+  }
+}
