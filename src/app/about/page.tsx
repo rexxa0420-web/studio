@@ -27,7 +27,7 @@ export default function AboutPage() {
     },
   ];
   
-  const aboutImage = PlaceHolderImages.find(img => img.id === 'about-us-technician');
+  const aboutImage = PlaceHolderImages.find(img => img.id === 'about-us-accessories');
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
