@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Award, Wrench, ShieldCheck, Zap } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function AboutPage() {
   const skills = [
@@ -26,8 +27,7 @@ export default function AboutPage() {
     },
   ];
   
-  const aboutImageUrl = "https://images.unsplash.com/photo-1621505703634-118c7347100b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-  const aboutImageAlt = "A technician repairing a smartphone on a workbench.";
+  const aboutImage = PlaceHolderImages.find(img => img.id === 'about-us-technician');
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
@@ -40,14 +40,16 @@ export default function AboutPage() {
 
       <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12">
         <div className="relative aspect-video w-full overflow-hidden rounded-lg shadow-lg">
-           <Image
-              src={aboutImageUrl}
-              alt={aboutImageAlt}
-              fill
-              priority
-              className="object-cover"
-              data-ai-hint="mobile technician repair"
-            />
+           {aboutImage && (
+             <Image
+                src={aboutImage.imageUrl}
+                alt={aboutImage.description}
+                fill
+                priority
+                className="object-cover"
+                data-ai-hint={aboutImage.imageHint}
+              />
+           )}
         </div>
         <div className="space-y-4">
           <h2 className="text-3xl font-bold text-primary">Our Commitment to Excellence</h2>
