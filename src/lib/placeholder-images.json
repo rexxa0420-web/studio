@@ -56,9 +56,9 @@
     },
     {
       "id": "about-us-technician",
-      "description": "A mobile repair shop storefront",
-      "imageUrl": "https://images.unsplash.com/photo-1614947138352-78a03a659963?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8bW9iaWxlJTIwcmVwYWlyJTIwc2hvcHxlbnwwfHx8fDE3Njk5NTI5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "repair shop front"
+      "description": "A technician repairing a smartphone on a workbench.",
+      "imageUrl": "https://images.unsplash.com/photo-1620299691928-002e1c9ea7a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNzAwOHwwfDF8c2VhcmNofDI2fHxtb2JpbGUlMjBwaG9uZSUyMHJlcGFpcnxlbnwwfHx8fDE3MjA2Mjg5NzF8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "technician workbench"
     },
     {
       "id": "contact-map",
