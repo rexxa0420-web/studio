@@ -25,7 +25,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, query, limit } from 'firebase/firestore';
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -51,7 +51,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const adminsQuery = useMemoFirebase(() => collection(firestore, 'roles_admin'), [firestore]);
+  const adminsQuery = useMemoFirebase(() => query(collection(firestore, 'roles_admin'), limit(1)), [firestore]);
   const { data: admins, isLoading: adminsLoading } = useCollection(adminsQuery);
 
   const loginForm = useForm<LoginFormValues>({

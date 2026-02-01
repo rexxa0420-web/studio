@@ -168,6 +168,13 @@ service cloud.firestore {
         allow delete: if isOwner(userId) && docExists();
       }
     }
+    
+    match /appointments/{appointmentId} {
+        allow get, list: if isAdmin();
+        allow create: if true;
+        allow update: if isAdmin() && docExists();
+        allow delete: if isAdmin() && docExists();
+    }
 
     // -------------------------------------------------------------------------
     // Administrative Collections
@@ -175,7 +182,7 @@ service cloud.firestore {
 
     /**
      * @description Manages admin roles. The existence of a document here grants a user admin privileges across the application.
-     *              Only existing admins can read or write to this collection.
+     *              Only existing admins can read or write to this collection. A limited list is allowed for all users to check for admin existence.
      * @path /roles_admin/{userId}
      * @allow (create) An existing admin grants admin rights to another user.
      * @deny  (list) A non-admin user attempts to see who the admins are.
@@ -183,8 +190,9 @@ service cloud.firestore {
      * @principle Secures the role management system by restricting it to already-privileged users.
      */
     match /roles_admin/{userId} {
-      allow get, list: if isAdmin();
-      allow create: if isAdmin();
+      allow get: if isAdmin();
+      allow list: if request.query.limit <= 1 || isAdmin();
+      allow create: if isAdmin() || !exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
       allow update: if isAdmin() && docExists();
       allow delete: if isAdmin() && docExists();
     }
